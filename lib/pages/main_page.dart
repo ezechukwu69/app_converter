@@ -55,7 +55,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         {currentLength, isFocused, maxLength}) =>
                     Visibility(
                         visible: isFocused,
-                        child: Text('$currentLength of $maxLength')),
+                        child: Text('$currentLength of $maxLength',
+                            style: GoogleFonts.aBeeZee())),
                 maxLength: 22,
               ),
               TextFieldWidget(
@@ -102,7 +103,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         total: '0.0',
                       );
                     }
-                    return Container();
                   })
             ],
           ),

@@ -1,6 +1,5 @@
 import 'package:app_converter/pages/main_page.dart';
 import 'package:flutter/material.dart';
-import '';
 
 void main() {
   runApp(MyApp());
