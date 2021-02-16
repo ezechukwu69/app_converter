@@ -14,11 +14,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  MainPageController controller = MainPageController();
+  MainPageController controller;
+  TextEditingController titleController;
 
   @override
   void initState() {
     super.initState();
+    controller = MainPageController();
+    titleController = TextEditingController();
     controller.titleSink("");
   }
 
@@ -35,7 +38,12 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               TextFieldWidget(
-                update: (data) => controller.titleSink(data),
+                controller: titleController,
+                update: (data) {
+                  if (data.length <= 25) {
+                    controller.titleSink(data);
+                  }
+                },
                 showBuildCounter: true,
                 suffixIcon: Icon(
                   CupertinoIcons.app_fill,
@@ -48,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Visibility(
                         visible: isFocused,
                         child: Text('$currentLength of $maxLength')),
-                maxLength: 25,
+                maxLength: 22,
               ),
               TextFieldWidget(
                 update: (data) {

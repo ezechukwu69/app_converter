@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class TextFieldWidget extends StatelessWidget {
   final void Function(String data) update;
+  final TextEditingController controller;
   final Widget suffixIcon;
   final TextInputType textInputType;
   final int maxLength;
@@ -20,7 +21,8 @@ class TextFieldWidget extends StatelessWidget {
       this.maxLength,
       this.maxLengthEnforced,
       this.showBuildCounter,
-      this.buildCounter})
+      this.buildCounter,
+      this.controller})
       : super(key: key);
 
   @override
@@ -28,6 +30,7 @@ class TextFieldWidget extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 12),
       child: TextField(
+        controller: controller,
         onChanged: update,
         maxLength: maxLength ?? null,
         maxLengthEnforced: maxLengthEnforced ?? false,
