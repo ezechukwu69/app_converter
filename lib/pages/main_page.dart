@@ -15,14 +15,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   MainPageController controller;
-  TextEditingController titleController;
 
   @override
   void initState() {
     super.initState();
     controller = MainPageController();
-    titleController = TextEditingController();
-    controller.titleSink("");
   }
 
   @override
@@ -31,75 +28,108 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        child: Center(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              TextFieldWidget(
-                controller: titleController,
-                update: (data) {
-                  if (data.length <= 25) {
-                    controller.titleSink(data);
-                  }
-                },
-                showBuildCounter: true,
-                suffixIcon: Icon(
-                  CupertinoIcons.app_fill,
+              ...controller.streams
+                  .asMap()
+                  .entries
+                  .map((e) => Column(
+                        children: [
+                          TextFieldWidget(
+                            key: ValueKey("title"),
+                            update: (data) {
+                              if (data.length <= 25) {
+                                e.value.titleSink(data);
+                              }
+                            },
+                            showBuildCounter: true,
+                            suffixIcon: Icon(
+                              CupertinoIcons.app_fill,
+                              size: 30,
+                            ),
+                            hint: "Title",
+                            maxLengthEnforced: true,
+                            buildCounter: (context,
+                                    {currentLength, isFocused, maxLength}) =>
+                                Visibility(
+                                    visible: isFocused,
+                                    child: Text('$currentLength of $maxLength',
+                                        style: GoogleFonts.aBeeZee())),
+                            maxLength: 22,
+                          ),
+                          TextFieldWidget(
+                            key: ValueKey("price"),
+                            update: (data) {
+                              if (data.isNotEmpty) {
+                                e.value.priceSink(double.tryParse(data));
+                              } else {
+                                e.value.priceSink(0);
+                              }
+                            },
+                            hint: "Price",
+                            textInputType: TextInputType.number,
+                            suffixIcon: Icon(
+                              CupertinoIcons.money_dollar,
+                              size: 30,
+                            ),
+                          ),
+                          TextFieldWidget(
+                            key: ValueKey("discount"),
+                            update: (data) {
+                              if (data.isNotEmpty) {
+                                e.value.discountSink(double.tryParse(data));
+                              } else {
+                                e.value.discountSink(0);
+                              }
+                            },
+                            hint: "Discount",
+                            textInputType: TextInputType.number,
+                            suffixIcon: Icon(
+                              CupertinoIcons.percent,
+                              size: 20,
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () {
+                                  setState(() {
+                                    controller.streams.removeAt(e.key);
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          Divider()
+                        ],
+                      ))
+                  .toList(),
+              IconButton(
+                icon: Icon(
+                  Icons.add_circle,
                   size: 30,
                 ),
-                hint: "Title",
-                maxLengthEnforced: true,
-                buildCounter: (context,
-                        {currentLength, isFocused, maxLength}) =>
-                    Visibility(
-                        visible: isFocused,
-                        child: Text('$currentLength of $maxLength',
-                            style: GoogleFonts.aBeeZee())),
-                maxLength: 22,
-              ),
-              TextFieldWidget(
-                update: (data) {
-                  if (data.isNotEmpty) {
-                    controller.priceSink(double.tryParse(data));
-                  } else {
-                    controller.priceSink(0);
-                  }
+                onPressed: () {
+                  setState(() {
+                    controller.streams.add(CustomStreamHandler());
+                  });
                 },
-                hint: "Price",
-                textInputType: TextInputType.number,
-                suffixIcon: Icon(
-                  CupertinoIcons.money_dollar,
-                  size: 30,
-                ),
               ),
-              TextFieldWidget(
-                update: (data) {
-                  if (data.isNotEmpty) {
-                    controller.discountSink(double.tryParse(data));
-                  } else {
-                    controller.discountSink(0);
-                  }
-                },
-                hint: "Discount",
-                textInputType: TextInputType.number,
-                suffixIcon: Icon(
-                  CupertinoIcons.percent,
-                  size: 20,
-                ),
-              ),
-              StreamBuilder<List<dynamic>>(
+              StreamBuilder<double>(
                   stream: controller.totalStream(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return TotalWidget(
-                        title: snapshot.data[1],
-                        total: snapshot.data[0].toString(),
+                        total: snapshot.data.toString(),
                       );
                     } else {
                       return TotalWidget(
-                        title: "Title",
                         total: '0.0',
                       );
                     }

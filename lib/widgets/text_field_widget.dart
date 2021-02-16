@@ -30,6 +30,7 @@ class TextFieldWidget extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 12),
       child: TextField(
+        key: key,
         controller: controller,
         onChanged: update,
         maxLength: maxLength ?? null,

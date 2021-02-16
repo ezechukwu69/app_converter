@@ -1,6 +1,19 @@
 import 'package:rxdart/rxdart.dart';
 
 class MainPageController {
+  List<CustomStreamHandler> streams = [CustomStreamHandler()];
+  Stream<double> totalStream() => CombineLatestStream<double, double>(
+          streams.map((e) =>
+              Rx.combineLatest2(e.priceStream(), e.discountStream(), (a, b) {
+                return a - ((b / 100) * a);
+              })), (values) {
+        double value = 0;
+        values.forEach((element) => value = value + element);
+        return value;
+      });
+}
+
+class CustomStreamHandler {
   // ignore: close_sinks
   BehaviorSubject<String> title = BehaviorSubject();
   // ignore: close_sinks
@@ -15,11 +28,4 @@ class MainPageController {
   Stream titleStream() => title.stream;
   Stream priceStream() => price.stream;
   Stream discountStream() => discount.stream;
-
-  Stream<List<dynamic>> totalStream() =>
-      Rx.combineLatest3(priceStream(), discountStream(), titleStream(),
-          (a, b, c) {
-        var percentage = (b / 100) * a;
-        return [a - percentage, c];
-      });
 }
